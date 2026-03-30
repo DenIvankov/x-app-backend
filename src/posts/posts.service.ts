@@ -323,75 +323,31 @@ export class PostsService {
     return { message: `Post with id ${postId} deleted` };
   }
 
-  async likePost(userId: number, postId: number) {
-    const post = await this.postRepository.findOne({
-      where: { id: postId },
-    });
-
-    if (!post) {
-      throw new NotFoundException(`Post with id ${postId} not found`);
-    }
-
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-
+  async toggleLike(userId: number, postId: number) {
     const existingLike = await this.postLikesRepository.findOne({
       where: { post: { id: postId }, user: { id: userId } },
     });
 
     if (existingLike) {
-      return { message: `Like state is up to date` };
-    }
-
-    await this.postLikesRepository.manager.transaction(async (manager) => {
-      const postLikesRepository = manager.getRepository(PostLike);
-
-      await postLikesRepository.save({
-        post,
-        user,
+      await this.postLikesRepository.delete(existingLike.id);
+      await this.postRepository.increment({ id: postId }, 'likesCount', -1);
+      return { liked: false, likesCount: await this.getLikesCount(postId) };
+    } else {
+      await this.postLikesRepository.save({
+        post: { id: postId },
+        user: { id: userId },
       });
-    });
-
-    return { message: `Like added to post with id ${postId}` };
+      await this.postRepository.increment({ id: postId }, 'likesCount', 1);
+      return { liked: true, likesCount: await this.getLikesCount(postId) };
+    }
   }
 
-  async unlikePost(userId: number, postId: number) {
+  private async getLikesCount(postId: number): Promise<number> {
     const post = await this.postRepository.findOne({
       where: { id: postId },
+      select: ['likesCount'],
     });
-
-    if (!post) {
-      throw new NotFoundException(`Post with id ${postId} not found`);
-    }
-
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-
-    const existingLike = await this.postLikesRepository.findOne({
-      where: { post: { id: postId }, user: { id: userId } },
-    });
-
-    if (!existingLike) {
-      return { message: `Like state is up to date` };
-    }
-
-    await this.postLikesRepository.manager.transaction(async (manager) => {
-      const postLikesRepository = manager.getRepository(PostLike);
-
-      await postLikesRepository.delete(existingLike.id);
-    });
-
-    return { message: `Like removed from post with id ${postId}` };
+    return post?.likesCount ?? 0;
   }
 
   private async attachCurrentUserLiked(posts: Post[], currentUserId?: number) {

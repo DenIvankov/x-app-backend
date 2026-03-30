@@ -148,7 +148,12 @@ export class PostsController {
       throw new BadRequestException('Maximum 4 media files are allowed');
     }
 
-    return this.postsService.updatePost(postId, userId, updatePostDto, mediaFiles);
+    return this.postsService.updatePost(
+      postId,
+      userId,
+      updatePostDto,
+      mediaFiles,
+    );
   }
 
   @Delete(':id')
@@ -170,36 +175,25 @@ export class PostsController {
   }
 
   @Post(':id/like')
-  @ApiOperation({ summary: 'Like post' })
+  @ApiOperation({ summary: 'Toggle like on post (like/unlike)' })
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
+  @ApiParam({ name: 'id', example: 1, description: 'Post identifier' })
   @ApiResponse({
     status: 200,
-    description: 'Like added successfully',
-    type: SuccessMessageDto,
+    description: 'Like toggled successfully',
+    schema: {
+      example: {
+        liked: true,
+        likesCount: 5,
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Post not found' })
-  likePost(
+  toggleLike(
     @User('userId') userId: number,
     @Param('id', ParseIntPipe) postId: number,
   ) {
-    return this.postsService.likePost(userId, postId);
-  }
-
-  @Delete(':id/like')
-  @ApiOperation({ summary: 'Unlike post' })
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @ApiResponse({
-    status: 200,
-    description: 'Like removed successfully',
-    type: SuccessMessageDto,
-  })
-  @ApiResponse({ status: 404, description: 'Post not found' })
-  unlikePost(
-    @User('userId') userId: number,
-    @Param('id', ParseIntPipe) postId: number,
-  ) {
-    return this.postsService.unlikePost(userId, postId);
+    return this.postsService.toggleLike(userId, postId);
   }
 }
