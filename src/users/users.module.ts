@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { UserProfilesController } from './user-profiles.controller';
+import { UsersController } from './сontrollers/users.controller';
+import { UserProfilesController } from './сontrollers/user-profiles.controller';
 import { User } from './entities/user.entity';
 import { UserCredential } from './entities/user-credential.entity';
 import { RefreshToken } from './entities/refresh-token.entity';

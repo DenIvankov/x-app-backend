@@ -20,10 +20,11 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/common/multer.config';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { User } from 'src/common/user.decorator';
-import { UsersService } from './users.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
-import { ProfileResponseDto, ProfileDto } from './dto/profile-response.dto';
-import { DeleteProfileImagesDto } from './dto/delete-profile-images.dto';
+import { UsersService } from 'src/users/users.service';
+import { ProfileResponseDto } from 'src/users/dto/profile-response.dto';
+import { CreateProfileDto } from 'src/users/dto/create-profile.dto';
+import { ProfileDto } from 'src/users/dto/profile-response.dto';
+import { DeleteProfileImagesDto } from 'src/users/dto/delete-profile-images.dto';
 
 @ApiTags('User Profiles')
 @ApiBearerAuth()

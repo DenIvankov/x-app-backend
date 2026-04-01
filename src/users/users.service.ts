@@ -151,18 +151,6 @@ export class UsersService {
     return { message: `Пользователь с id ${id} удален` };
   }
 
-  async deleteAll(): Promise<{ message: string }> {
-    const result = await this.userRepository.count();
-
-    if (!result) {
-      throw new NotFoundException(`Users not found`);
-    }
-
-    await this.userRepository.clear();
-
-    return { message: `All users deleted` };
-  }
-
   async update(id: number, updateUserDto: UpdateUserDto) {
     const { password, ...userData } = updateUserDto;
 
@@ -194,18 +182,6 @@ export class UsersService {
     }
 
     return `This action updates a #${id} user`;
-  }
-
-  async removeByName(nameToDelete: string) {
-    const result = await this.userRepository.delete({
-      name: nameToDelete,
-    });
-
-    if (!result.affected) {
-      throw new NotFoundException(`User with name ${nameToDelete} not found`);
-    }
-
-    return { message: `User with name ${nameToDelete} deleted` };
   }
 
   private async ensureEmailIsAvailable(email: string, excludeUserId?: number) {

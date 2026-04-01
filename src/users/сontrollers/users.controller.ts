@@ -15,12 +15,12 @@ import {
   ApiTags,
   ApiResponse,
 } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/auth/dto/create-user.dto';
+import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
 import { JwtGuard } from 'src/auth/jwt.guard';
-import { UsersService } from './users.service';
-import { CreateUserDto } from '../auth/dto/create-user.dto';
-import { UpdateUserDto } from '../auth/dto/update-user.dto';
-import { UserResponseDto, UsersListDto } from './dto/user-response.dto';
 import { SuccessMessageDto } from 'src/common/dto/success-message.dto';
+import { UserResponseDto, UsersListDto } from 'src/users/dto/user-response.dto';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('Users')
 @Controller('users')
@@ -28,10 +28,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Создать пользователя' })
   @ApiResponse({
-    status: 201,
-    description: 'User created successfully',
     type: UserResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -43,7 +40,6 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @Get()
-  @ApiOperation({ summary: 'Получить всех пользователей' })
   @ApiResponse({
     status: 200,
     description: 'Users retrieved successfully',
@@ -55,7 +51,6 @@ export class UsersController {
   }
 
   @Get('id/:id')
-  @ApiOperation({ summary: 'Получить пользователя по id' })
   @ApiParam({ name: 'id', example: 1, description: 'User identifier' })
   @ApiResponse({
     status: 200,
@@ -68,8 +63,8 @@ export class UsersController {
   }
 
   @Get('name/:name')
-  @ApiOperation({ summary: 'Получить пользователя по имени' })
-  @ApiParam({ name: 'name', example: 'Пётр', description: 'User name' })
+  @ApiOperation({ summary: 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ' })
+  @ApiParam({ name: 'name', example: 'ПёпїЅпїЅ', description: 'User name' })
   @ApiResponse({
     status: 200,
     description: 'User retrieved successfully',
@@ -94,23 +89,6 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
-  @Delete('name/:userName')
-  @ApiOperation({ summary: 'Delete user by name' })
-  @ApiParam({
-    name: 'userName',
-    example: 'Denis',
-    description: 'User name',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'User deleted successfully',
-    type: SuccessMessageDto,
-  })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@Param('userName') userNameFromParams: string) {
-    return this.usersService.removeByName(userNameFromParams);
-  }
-
   @Delete('id/:id')
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiParam({ name: 'id', example: 1, description: 'User identifier' })
@@ -122,16 +100,5 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   removeId(@Param('id') id: string) {
     return this.usersService.delete(+id);
-  }
-
-  @Delete()
-  @ApiOperation({ summary: 'Delete all users' })
-  @ApiResponse({
-    status: 200,
-    description: 'All users deleted successfully',
-    type: SuccessMessageDto,
-  })
-  deleteAll() {
-    return this.usersService.deleteAll();
   }
 }
